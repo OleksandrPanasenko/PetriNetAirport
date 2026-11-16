@@ -1,0 +1,391 @@
+package ua.stetsenkoinna.petriobj;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+
+/**
+ * This class provides constructing Petri net
+ *
+ * @author Inna V. Stetsenko
+ */
+public class PetriNet implements Cloneable, Serializable {
+
+
+    /**
+     * @return the ListIn
+     */
+    public ArcIn[] getListIn() {
+        return ListIn;
+    }
+
+    /**
+     * @return the ListOut
+     */
+    public ArcOut[] getListOut() {
+        return ListOut;
+    }
+
+    private String name;
+    private int numP;
+    private int numT;
+    private int numIn;
+    private int numOut;
+    private PetriP[] ListP = new PetriP[numP];
+    private PetriT[] ListT = new PetriT[numT];
+    private ArcIn[] ListIn = new ArcIn[numIn];
+    private ArcOut[] ListOut = new ArcOut[numOut];
+
+    /**
+     * Construct Petri net for given set of places, set of transitions, set of
+     * arcs and the name of Petri net
+     *
+     * @param s name of Petri net
+     * @param pp set of places
+     * @param TT set of transitions
+     * @param In set of arcs directed from place to transition
+     * @param Out set of arcs directed from transition to place
+     */
+    public PetriNet(String s, PetriP[] pp, PetriT[] TT, ArcIn[] In, ArcOut[] Out) {
+        name = s;
+        numP = pp.length;
+        numT = TT.length;
+        numIn = In.length;
+        numOut = Out.length;
+        ListP = pp;
+        ListT = TT;
+        ListIn = In;
+        ListOut = Out;
+
+        for (PetriT transition : ListT) {
+            try {
+                transition.createInP(ListIn);
+                transition.createOutP(ListOut);
+                if (transition.getInP().isEmpty()) {
+                    throw new ExceptionInvalidTimeDelay("Error: Transition " + transition.getName() + " has empty list of input places "); //генерувати виключення???
+                }
+                if (transition.getOutP().isEmpty()) {
+                    throw new ExceptionInvalidTimeDelay("Error: Transition " + transition.getName() + " has empty list of input places"); //генерувати виключення???
+                }
+            } catch (ExceptionInvalidTimeDelay ex) {
+                System.out.println("Failed to wire transition input/output places: " + ex.getMessage());
+            }
+        }
+
+    }
+
+    /**
+     *
+     * @param s name of Petri net
+     * @param pp set of places
+     * @param TT set of transitions
+     * @param In set of arcs directed from place to transition
+     * @param Out set of arcs directed from transition to place
+     * @throws ExceptionInvalidTimeDelay if Petri net has invalid structure
+     */
+    public PetriNet(String s, ArrayList<PetriP> pp, ArrayList<PetriT> TT, ArrayList<ArcIn> In, ArrayList<ArcOut> Out) throws ExceptionInvalidTimeDelay //додано 16 серпня 2011
+    {//Працює прекрасно, якщо номера у списку співпадають із номерами, що присвоюються, і з номерами, які використовувались при створенні зв"язків!!!
+        name = s;
+        numP = pp.size();
+        numT = TT.size();
+        numIn = In.size();
+        numOut = Out.size();
+        ListP = new PetriP[numP];
+        ListT = new PetriT[numT];
+        ListIn = new ArcIn[numIn];
+        ListOut = new ArcOut[numOut];
+
+        for (int j = 0; j < numP; j++) {
+            ListP[j] = pp.get(j);
+        }
+
+        for (int j = 0; j < numT; j++) {
+            ListT[j] = TT.get(j);
+        }
+
+        for (int j = 0; j < numIn; j++) {
+            ListIn[j] = In.get(j);
+        }
+        for (int j = 0; j < numOut; j++) {
+            ListOut[j] = Out.get(j);
+        }
+
+        for (PetriT transition : ListT) {
+            transition.createInP( ListIn);
+            transition.createOutP( ListOut);
+        }
+
+    }
+
+    /**
+     *
+     * @return name of Petri net
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets name of Petri net
+     *
+     * @param s the name of Petri net
+     */
+    public void setName(String s) {
+        name = s;
+    }
+
+    /**
+     * Checks that every transition has at least one input place it actually consumes from.
+     *
+     * <p>The check deliberately does not live in {@link PetriT#createInP}, which runs while a
+     * net is still being assembled: an editor adds places, transitions and arcs one at a time,
+     * so an incomplete net has to be allowed to exist and is validated only once it is whole.
+     *
+     * @throws ExceptionInvalidTimeDelay naming the first transition with no consuming input at all
+     */
+    public void validateStructure() throws ExceptionInvalidTimeDelay {
+        for (PetriT transition : ListT) {
+            if (!transition.hasConsumingInput()) {
+                throw new ExceptionInvalidTimeDelay(
+                        "Transition " + transition.getName() + " hasn't input positions!");
+            }
+        }
+    }
+
+    /**
+     *
+     * @return array of Petri net places
+     */
+    public PetriP[] getListP() {
+        return ListP;
+    }
+
+    /**
+     *
+     * @return array of Petri net transitions
+     */
+    public PetriT[] getListT() {
+        return ListT;
+    }
+
+    /**
+     *
+     * @return array of Petri net input arcs
+     */
+    public ArcIn[] getArcIn() {
+        return getListIn();
+    }
+
+    /**
+     *
+     * @return array of Petri net output arcs
+     */
+    public ArcOut[] getArcOut() {
+        return getListOut();
+    }
+
+    /**
+     * Finds the place of Petri net with given name
+     *
+     * @param s name of place
+     * @return number of place with given name
+     */
+    public int strToNumP(String s) {
+        
+        int a = -1;
+        for (PetriP e : ListP) {
+            if (s.equalsIgnoreCase(e.getName())) {
+                a = e.getNumber();
+                
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Determines the quantity of markers in place with given name
+     *
+     * @param s name of place
+     * @return quantity of markers in place with given name
+     */
+    public int getCurrentMark(String s) {
+        return ListP[this.strToNumP(s)].getMark();
+    }
+
+    /**
+     * Determines the mean value of markers in place with given name
+     *
+     * @param s name of place
+     * @return the mean value of quantity of markers in place with given name
+     */
+    public double getMeanMark(String s) {
+        return ListP[this.strToNumP(s)].getMean();
+    }
+
+    /**
+     * Determines quantity of active channels of transition with given name
+     *
+     * @param s name of transition
+     * @return quantity of active channels of transition
+     */
+    public int getCurrentBuffer(String s) {
+        return ListT[strToNumT(s)].getBuffer();
+    }
+
+    /**
+     * Determines mean value of active channels of transition with given name
+     *
+     * @param s name of transition
+     * @return the mean value of quantity of active channels of transition
+     */
+    public double getMeanBuffer(String s) {
+        return ListT[strToNumT(s)].getMean();
+    }
+
+    /**
+     * Finds the place of Petri net with given name and given set of places
+     *
+     * @param s name of place
+     * @param pp array of places
+     * @return the number of place
+     */
+    public int strToNumP(String s, PetriP[] pp) {
+   
+        int a = -1;
+        for (PetriP e : pp) {
+            if (s.equalsIgnoreCase(e.getName())) {
+                a = e.getNumber();
+                
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Finds the transition of Petri net with given name
+     *
+     * @param s name of transition
+     * @return the number of transition of Petri net with given name
+     */
+    public int strToNumT(String s) {
+        
+        int a = -1;
+        for (PetriT e : ListT) {
+            if (s.equalsIgnoreCase(e.getName())) {
+                a = e.getNumber();
+                
+            }
+        }
+        return a;
+    }
+
+    /**
+     *
+     */
+    public void printArcs() //додано 1.10.2012
+    {
+        System.out.println("Petri net " + name + " arcs: " + getListIn().length + " input arcs and " + getListOut().length + " output arcs");
+
+        for (ArcIn arcs : getListIn()) {
+            arcs.print();
+        }
+        for (ArcOut arcs : getListOut()) {
+            arcs.print();
+        }
+    }
+
+    /**
+     *
+     */
+    public void printMark() {
+        StringBuilder sb = new StringBuilder("Mark in Net  " + this.getName() + "   ");
+        for (PetriP position: ListP) {
+            sb.append(position.getMark()).append("  ");
+        }
+        System.out.println(sb.toString());
+    }
+    public void printBuffer() {
+        StringBuilder sb = new StringBuilder("Buffer in Net  " + this.getName() + "   ");
+        for (PetriT transition: ListT) {
+            sb.append(transition.getBuffer()).append("  ");
+        }
+        System.out.println(sb.toString());
+    }
+    
+    
+    
+    public boolean hasParameters() { // added by Katya 08.12.2016
+        for (PetriP petriPlace : ListP) {
+            if (petriPlace.markIsParam()) {
+                return true;
+            }
+        }
+        for (PetriT petriTran : ListT) {
+            if (petriTran.distributionIsParam() || petriTran.parametrIsParam() || petriTran.priorityIsParam() || petriTran.probabilityIsParam()) {
+                return true;
+            }
+        }
+        for (ArcIn arcIn : getListIn()) {
+            if (arcIn.infIsParam() || arcIn.kIsParam()) {
+                return true;
+            }
+        }
+        for (ArcOut arcOut : getListOut()) {
+            if (arcOut.kIsParam()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Gets a detailed list of all unspecified parameters in the Petri net
+     * @return ArrayList of strings describing each unspecified parameter
+     */
+    public ArrayList<String> getUnspecifiedParameters() {
+        ArrayList<String> unspecifiedParams = new ArrayList<>();
+
+        // Check places for unspecified markings
+        for (PetriP petriPlace : ListP) {
+            if (petriPlace.markIsParam()) {
+                unspecifiedParams.add("Place '" + petriPlace.getName() + "' - marking not specified");
+            }
+        }
+
+        // Check transitions for unspecified parameters
+        for (PetriT petriTran : ListT) {
+            if (petriTran.distributionIsParam()) {
+                unspecifiedParams.add("Transition '" + petriTran.getName() + "' - distribution not specified");
+            }
+            if (petriTran.parametrIsParam()) {
+                unspecifiedParams.add("Transition '" + petriTran.getName() + "' - delay parameter not specified");
+            }
+            if (petriTran.priorityIsParam()) {
+                unspecifiedParams.add("Transition '" + petriTran.getName() + "' - priority not specified");
+            }
+            if (petriTran.probabilityIsParam()) {
+                unspecifiedParams.add("Transition '" + petriTran.getName() + "' - probability not specified");
+            }
+        }
+
+        // Check input arcs for unspecified parameters
+        for (ArcIn arcIn : getListIn()) {
+            if (arcIn.infIsParam()) {
+                unspecifiedParams.add("Input Arc '" + arcIn.getNameP() + " -> " + arcIn.getNameT() + "' - inhibitor parameter not specified");
+            }
+            if (arcIn.kIsParam()) {
+                unspecifiedParams.add("Input Arc '" + arcIn.getNameP() + " -> " + arcIn.getNameT() + "' - weight not specified");
+            }
+        }
+
+        // Check output arcs for unspecified parameters
+        for (ArcOut arcOut : getListOut()) {
+            if (arcOut.kIsParam()) {
+                unspecifiedParams.add("Output Arc '" + arcOut.getNameT() + " -> " + arcOut.getNameP() + "' - weight not specified");
+            }
+        }
+
+        return unspecifiedParams;
+    }
+
+}
