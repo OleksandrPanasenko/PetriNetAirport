@@ -3,7 +3,7 @@ import ua.stetsenkoinna.petriobj.*;
 
 public class Airport {
     public static void main(String[] args) throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure{
-        double timeModeling = 10000.;
+        double timeModeling = 100000.;
 
         PetriSim model=CreateAirportNet(3,
                                         2,
@@ -15,7 +15,7 @@ public class Airport {
                                         120.,
                                         240.,
                                         60.0);
-        model.setStatysticsInterval(10.);
+        model.setStatysticsInterval(100.);
         model.go(timeModeling);
         model.printStatistics();
         
@@ -45,6 +45,8 @@ public class Airport {
         d_P.add(new PetriP("Big flights done",0));//7
         d_P.add(new PetriP("Store total",0));//8
         d_P.add(new PetriP("Cargo delivered",0));//9
+        d_P.add(new PetriP("In System",0));//10
+        d_P.add(new PetriP("Cargo delivered final",0));//11 //new, to verify all path time
         
 
 		d_T.add(new PetriT("Arrival",timeCargoArrival));
@@ -54,9 +56,9 @@ public class Airport {
 		d_Out.add(new ArcOut(d_T.get(0),d_P.get(0),1));//Arrival->Source
 		d_Out.add(new ArcOut(d_T.get(0),d_P.get(1),1));//Arrival->Store
         d_Out.add(new ArcOut(d_T.get(0),d_P.get(8),1));//Arrival->Store totals
+        d_Out.add(new ArcOut(d_T.get(0),d_P.get(10),1));//Arrival->In System //new, to verify all path time
 
         d_T.add(new PetriT("Loading small",timeLoad));
-        //TODO: set distribution to sum of exponentials
         d_T.get(1).setPriority(1);//give priority to small planes
 		d_T.get(1).setDistribution("expsum", d_T.get(1).getTimeServ());
 		d_T.get(1).setParamDeviation(smallPlaneSize);//put number of containers
@@ -77,7 +79,6 @@ public class Airport {
         d_Out.add(new ArcOut(d_T.get(2),d_P.get(9),smallPlaneSize));//Small planes flight->Cargo delivered
 
         d_T.add(new PetriT("Loading big",timeLoad));
-        //TODO: set distribution to sum of exponentials, add priority
 		d_T.get(3).setDistribution("expsum", d_T.get(3).getTimeServ());
 		d_T.get(3).setParamDeviation(bigPlaneSize);//put number of containers
 		d_In.add(new ArcIn(d_P.get(1),d_T.get(3),bigPlaneSize));//Store->Loading big
@@ -96,6 +97,11 @@ public class Airport {
         d_Out.add(new ArcOut(d_T.get(4),d_P.get(4),1));//Big planes flight->Big planes
         d_Out.add(new ArcOut(d_T.get(4),d_P.get(9),bigPlaneSize));//Big planes flight->Cargo delivered
 
+        d_T.add(new PetriT("Output",0));
+        d_In.add(new ArcIn(d_P.get(9),d_T.get(5),1));//Cargo delivered->Output
+        d_In.add(new ArcIn(d_P.get(10),d_T.get(5),1));//Big fly-ready->Output
+        d_Out.add(new ArcOut(d_T.get(5),d_P.get(11),1));//Output->Cargo delivered final
+
 
 		PetriNet d_Net = new PetriNet("Petri Airport",d_P,d_T,d_In,d_Out);
 		PetriP.initNext();
@@ -107,8 +113,9 @@ public class Airport {
         petriSim.addPositionForStatistica(d_P.get(1));//Store, to verify
         petriSim.addPositionForStatistica(d_P.get(2));//Smaller planes
         petriSim.addPositionForStatistica(d_P.get(4));//Bigger planes
-        petriSim.addPositionForStatistica(d_P.get(9));//Delivered cargo, to verify
+        petriSim.addPositionForStatistica(d_P.get(11));//Delivered cargo, to verify
         petriSim.addPositionForTimeStatistica(d_P.get(1));//Store wait time
+        petriSim.addPositionForTimeStatistica(d_P.get(10));//In System wait time
 
 		return petriSim;
     }

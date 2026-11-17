@@ -21,9 +21,12 @@ public class ValidateAirport {
 
         csvLines.add(runValidation("2_1_MoreSmallPlanes", base.withSmallPlanes(5), 5));
         csvLines.add(runValidation("2_2_LessSmallPlanes", base.withSmallPlanes(1), 5));
-        csvLines.add(runValidation("2_1_MoreSmallPlanes", base.withSmallPlanes(5), 5));
-        csvLines.add(runValidation("3_1_MoreBigPlanes", base.withBigPlanes(3), 5));
-        csvLines.add(runValidation("3_2_LessBigPlanes", base.withBigPlanes(1), 5));
+        csvLines.add(runValidation("2_3_MoreBigPlanes", base.withBigPlanes(3), 5));
+        csvLines.add(runValidation("2_4_LessBigPlanes", base.withBigPlanes(1), 5));
+        csvLines.add(runValidation("3_1_BiggerSmallPlanes", base.withSmallPlanesSize(100), 5));
+        csvLines.add(runValidation("3_2_SmallerSmallPlanes", base.withSmallPlanesSize(60), 5));
+        csvLines.add(runValidation("3_3_BiggerBigPlanes", base.withBigPlanesSize(160), 5));
+        csvLines.add(runValidation("3_4_SmallerBigPlanes", base.withBigPlanesSize(120), 5));
         csvLines.add(runValidation("4_1_FasterArrivals", base.withArrivalTime(0.25), 5));
         csvLines.add(runValidation("4_2_SlowerArrivals", base.withArrivalTime(0.75), 5));
         
@@ -88,6 +91,8 @@ public class ValidateAirport {
 
     public SimConfig withTime(int val) { SimConfig c = copy(); c.timeModeling = val; return c; }
     public SimConfig withSmallPlanes(int val) { SimConfig c = copy(); c.smallPlanes = val; return c; }
+    public SimConfig withSmallPlanesSize(int val) { SimConfig c = copy(); c.smallPlaneSize = val; return c; }
+    public SimConfig withBigPlanesSize(int val) { SimConfig c = copy(); c.bigPlaneSize = val; return c; }
     public SimConfig withBigPlanes(int val) { SimConfig c = copy(); c.bigPlanes = val; return c; }
     public SimConfig withTimeFly(double mean, double min, double max, double std) { SimConfig c = copy(); c.avgFlight = mean; c.minFlight = min; c.maxFlight = max; c.stdFlight = std; return c; }
     public SimConfig withArrivalTime(double val) { SimConfig c = copy(); c.timeCargoArrival = val; return c; }

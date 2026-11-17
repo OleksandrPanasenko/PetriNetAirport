@@ -279,10 +279,12 @@ public class PetriSim implements Cloneable, Serializable {
                 min = transition.getMinTime();
             }
         }
+        if(min>getSimulationTime()){
+            min=getSimulationTime();
+            event=null;
+        }
         timeMin = min;
-        
         eventMin = event;
-        
     }
 
     /**
@@ -510,12 +512,10 @@ public class PetriSim implements Cloneable, Serializable {
         }
         output();
         input();  
-
+        //hybrid approach for better accuracy
+        doStatistics();
         if(doIntervalStatistics && (timeMin>=timeLastStatistics+statisticsInterval)){
             doStatisticsInterval();
-        }
-        else{
-            doStatistics();
         }
         
         setTimeCurr(timeMin);
@@ -526,16 +526,23 @@ public class PetriSim implements Cloneable, Serializable {
      * active channels of transitions
      */
     public void doStatistics() {
-        for (PetriP position : listPositionsForStatistica) {
-            position.changeMean((timeMin - this.getCurrentTime()) / timeMin);
+        if(timeMin>getSimulationTime()){
+            for (PetriP position : listPositionsForStatistica) {
+                position.changeMean((getSimulationTime() - this.getCurrentTime()) / getSimulationTime());
+            }    
         }
+        else{
+            for (PetriP position : listPositionsForStatistica) {
+                position.changeMean((timeMin - this.getCurrentTime()) / timeMin);
+            }    
+        }
+        
     }
     public void doStatisticsInterval() {
         timeLastStatistics+=statisticsInterval;
         listTimeForStatistica.add(timeLastStatistics);
         for (int p=0;p<getListPositionsForStatistica().size();p++) {
             PetriP position= listPositionsForStatistica.get(p);
-            position.changeMean((statisticsInterval) / timeLastStatistics);
             averageMarkersTimesForPositions.get(p).add(position.getMean());
         }
         for(int p=0;p<getListPositionsForTimeStatistica().size();p++) {
