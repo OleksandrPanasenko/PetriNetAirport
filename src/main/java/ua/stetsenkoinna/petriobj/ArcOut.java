@@ -1,7 +1,5 @@
 package ua.stetsenkoinna.petriobj;
 
-import java.io.Serializable;
-
 
 
 /**
@@ -10,9 +8,8 @@ import java.io.Serializable;
  *
  *  @author Inna V. Stetsenko
  */
-public class ArcOut implements Cloneable, Serializable {
+public class ArcOut {
 
-    private final PetriElementId id;
     private int numP;
     private int numT;
     private int k;
@@ -26,7 +23,6 @@ public class ArcOut implements Cloneable, Serializable {
     private String kParamName = null;
 
     public ArcOut() {
-        id = PetriElementId.forArc();
         next++;
         k = 1;
     }
@@ -37,7 +33,6 @@ public class ArcOut implements Cloneable, Serializable {
      * @param K arc multiplicity
      */
     public ArcOut(int T, int P, int K) {
-        id = PetriElementId.forArc();
         next++;
         numP = P;
         numT = T;
@@ -51,7 +46,6 @@ public class ArcOut implements Cloneable, Serializable {
      * @param K arc multiplicity
      */
     public ArcOut(PetriT T, PetriP P, int K) {
-        id = PetriElementId.forArc();
         next++;
         numP = P.getNumber();
         numT = T.getNumber();
@@ -60,25 +54,6 @@ public class ArcOut implements Cloneable, Serializable {
         nameT = T.getName();
     }
 
-    public ArcOut(ArcOut arcOut) {
-        this(arcOut.getNumT(), arcOut.getNumP(), arcOut.getQuantity());
-    }
-
-    /**
-     * Constructor for loading from PNML with existing ID
-     *
-     * @param id Existing ID from PNML
-     * @param T number of transition
-     * @param P number of place
-     * @param K arc multiplicity
-     */
-    public ArcOut(String id, int T, int P, int K) {
-        this.id = PetriElementId.fromString(id);
-        next++;
-        numP = P;
-        numT = T;
-        k = K;
-    }
 
     public boolean kIsParam() {
         return kIsParam;
@@ -198,34 +173,11 @@ public class ArcOut implements Cloneable, Serializable {
         }
     }
 
-    /**
-     *
-     * @return ArcOut object with parameters which copy current parameters ofthis arc
-     * @throws java.lang.CloneNotSupportedException if Petri net has invalid structure
-     */
-    @Override
-    public ArcOut clone() throws CloneNotSupportedException {
-        super.clone();
-        return new ArcOut(numT, numP, k);
-    }
+
 
     public void printParameters() {
         System.out.println("This arc has direction from  transition  with number " + numT + " to place with number " + numP
                 + " and has " + k + " value of multiplicity");
-    }
-
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id != null ? id.getValue() : null;
-    }
-
-    /**
-     * @return the id wrapper
-     */
-    public PetriElementId getIdWrapper() {
-        return id;
     }
 
 }

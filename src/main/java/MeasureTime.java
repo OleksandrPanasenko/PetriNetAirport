@@ -9,7 +9,7 @@ import ua.stetsenkoinna.petriobj.ExceptionInvalidTimeDelay;
 import ua.stetsenkoinna.petriobj.PetriSim;
 
 public class MeasureTime {
-    static double timeModeling = 10000.;
+    static double timeModeling = 100_000.;
     static int NumberRepeats=4;
     public static void main(String[] args) throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure{
         
@@ -26,23 +26,33 @@ public class MeasureTime {
                                             120.,
                                             240.,
                                             60.0);
-            model.setStatysticsInterval(10.);
+            model.setStatysticsInterval(100.);
             model.go(timeModeling);
             simulations.add(model);
         }
-
-    List<List<Double>> allMeanWaitTimes = new ArrayList<>();
-    List<List<Double>> allStdWaitTimes = new ArrayList<>();
+    List<List<Double>> allMeanSmallPlanesLoad = new ArrayList<>();
+    List<List<Double>> allMeanBigPlanesLoad = new ArrayList<>();
+    List<List<Double>> allMeanStoreWaitTimes = new ArrayList<>();
+    List<List<Double>> allMeanSystemWaitTimes = new ArrayList<>();
+    List<List<Double>> allStdStoreWaitTimes = new ArrayList<>();
+    List<List<Double>> allStdSystemWaitTimes = new ArrayList<>();
 
     for (PetriSim model : simulations) {
-        // We only measure one element
-        allMeanWaitTimes.add(model.getAverageWaitTimes().get(0)); 
-        allStdWaitTimes.add(model.getStdWaitTimes().get(0));     
+        allMeanSmallPlanesLoad.add(model.getAverageMarkersTimes().get(1));
+        allMeanBigPlanesLoad.add(model.getAverageMarkersTimes().get(2));
+        allMeanStoreWaitTimes.add(model.getAverageWaitTimes().get(0));
+        allMeanSystemWaitTimes.add(model.getAverageWaitTimes().get(1));
+        allStdStoreWaitTimes.add(model.getStdWaitTimes().get(0));
+        allStdSystemWaitTimes.add(model.getStdWaitTimes().get(1));
     }
 
-    // Export to two csv files
-    exportTimeSeriesCsv("wait_times_mean.csv", simulations.get(0).getTimes(), allMeanWaitTimes);
-    exportTimeSeriesCsv("wait_times_std.csv", simulations.get(0).getTimes(), allStdWaitTimes);
+    // Export to csv files
+    exportTimeSeriesCsv("wait_times_mean.csv", simulations.get(0).getTimes(), allMeanStoreWaitTimes);
+    exportTimeSeriesCsv("wait_times_mean_system.csv", simulations.get(0).getTimes(), allMeanSystemWaitTimes);
+    exportTimeSeriesCsv("wait_times_std.csv", simulations.get(0).getTimes(), allStdStoreWaitTimes);
+    exportTimeSeriesCsv("wait_times_std_system.csv", simulations.get(0).getTimes(), allStdSystemWaitTimes);
+    exportTimeSeriesCsv("small_planes_load.csv", simulations.get(0).getTimes(), allMeanSmallPlanesLoad);
+    exportTimeSeriesCsv("big_planes_load.csv", simulations.get(0).getTimes(), allMeanBigPlanesLoad);
     System.out.println("Export completed successfully: wait_times_mean.csv & wait_times_std.csv");
 
     }

@@ -1,6 +1,5 @@
 package ua.stetsenkoinna.petriobj;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
  *
  * @author Inna V. Stetsenko
  */
-public class PetriNet implements Cloneable, Serializable {
+public class PetriNet {
 
 
     /**

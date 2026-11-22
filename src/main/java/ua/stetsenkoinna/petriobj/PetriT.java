@@ -4,8 +4,6 @@ package ua.stetsenkoinna.petriobj;
 import java.util.*;
 import javax.swing.JOptionPane;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class for creating the transition of Petri net
@@ -13,10 +11,6 @@ import org.slf4j.LoggerFactory;
  *  @author Inna V. Stetsenko
  */
 public class PetriT extends PetriMainElement {
-
-    private static final Logger log = LoggerFactory.getLogger(PetriT.class);
-
-    private final PetriElementId id;
     private String name;
     private int number;
 
@@ -66,7 +60,6 @@ public class PetriT extends PetriMainElement {
      * @param tS timed delay
      */
     public PetriT(String n, double tS) {
-        id = PetriElementId.forTransition(n);
         name = n;
         number = next;
         next++;
@@ -116,45 +109,6 @@ public class PetriT extends PetriMainElement {
         this(n,0.0);
     }
 
-     /**
-     *
-     * @param id unique number for saving on server
-     * @param n name of transition
-     * @param tS timed delay
-     */
-    public PetriT(String id, String n, double tS) {
-       this.id = PetriElementId.fromString(id);
-       name = n;
-       number = next;
-       next++;
-       parametr = tS;
-       paramDeviation = 0;
-       timeServ = parametr;
-       buffer = 0;
-
-       minTime = Double.MAX_VALUE;
-       num = 0;
-       mean = 0;
-       observedMax = buffer;
-       observedMin = buffer;
-       priority = 0;
-       probability = 1.0;
-       distribution = null;
-       timeOut.add(Double.MAX_VALUE);
-       this.minEvent();
-    }
-
-    /**
-     * @param id unique number for saving on server*
-     * @param n name of transition
-     * @param tS timed delay
-     * @param prior value of priority
-     */
-    public PetriT(String id, String n, double tS, int prior) {
-        this(id, n, tS);
-        priority = prior;
-    }
-
     public PetriT(PetriT transition) {
         this(transition.getName(), transition.getParameter());
         setDistribution(transition.getDistribution(), transition.getParameter());
@@ -164,24 +118,6 @@ public class PetriT extends PetriMainElement {
         next++;
         buffer = transition.getBuffer();
         paramDeviation = transition.getParamDeviation();
-    }
-
-    /**
-     * @param id unique number for saving on server*
-     * @param n name of transition
-     * @param tS timed delay
-     * @param prob value of probability
-     */
-    public PetriT(String id, String n, double tS, double prob) {
-        this(id, n,tS);
-        probability = prob;
-    }
-    /**
-     * @param id unique number for saving on server*
-     * @param n name of transition
-     */
-    public PetriT(String id, String n) {
-        this(id, n,0.0);
     }
 
     public boolean parametrIsParam() {
@@ -429,7 +365,7 @@ public class PetriT extends PetriMainElement {
                 timeServ = parametr; // детерміноване значення
             }
         } catch (ExceptionInvalidTimeDelay ex) {
-            log.error("Failed to compute service time", ex);
+            System.out.println("Failed to compute service time" + ex.getMessage());
         }
         return timeServ;
     }
@@ -535,7 +471,7 @@ public class PetriT extends PetriMainElement {
             }
         }
         if (getOutP().isEmpty()) {
-            log.warn("Transition {} has no output places (acts as a sink transition)", this.getName());
+            System.out.println("Transition {} has no output places (acts as a sink transition)" + this.getName());
         }
     }
 
@@ -670,7 +606,7 @@ public class PetriT extends PetriMainElement {
 
     public void print() {
         for (double time: timeOut) {
-            log.info("{}   {}", time, this.getName());
+            System.out.println("{}   {}" + time+" "+ this.getName());
         }
     }
 
@@ -687,7 +623,7 @@ public class PetriT extends PetriMainElement {
         for (Integer out : getOutP()) {
             sb.append(out.toString()).append("  ");
         }
-        log.info(sb.toString());
+        System.out.println(sb.toString());
     }
 
     /**
@@ -846,27 +782,14 @@ public class PetriT extends PetriMainElement {
     public void printEventMoments() {
         if (moments) {
             EventMoments events = new EventMoments(inMoments, outMoments);
-            log.info(this.getName());
+            System.out.println(this.getName());
             for (EventMoments.Interval interval : events.getList()) {
-                log.info("{}  {}", interval.getIn(), interval.getOut());
+                System.out.println("{}  {} "+interval.getIn()+" "+ interval.getOut());
             }
         } else{
-            log.info("Set parameter 'moments' = true");
+            System.out.println("Set parameter 'moments' = true");
         }
     }
     
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id != null ? id.getValue() : null;
-    }
-
-    /**
-     * @return the id wrapper
-     */
-    public PetriElementId getIdWrapper() {
-        return id;
-    }
 
 }

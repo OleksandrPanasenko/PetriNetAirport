@@ -109,7 +109,7 @@ public class Airport {
 		ArcIn.initNext();
 		ArcOut.initNext();
 
-        PetriSim petriSim = new PetriSim("Airport", d_Net, new StateTime());
+        PetriSim petriSim = new PetriSim(d_Net, new StateTime());
         petriSim.addPositionForStatistica(d_P.get(1));//Store, to verify
         petriSim.addPositionForStatistica(d_P.get(2));//Smaller planes
         petriSim.addPositionForStatistica(d_P.get(4));//Bigger planes
@@ -133,20 +133,36 @@ public class Airport {
         return model.getListPositionsForStatistica().get(2).getObservedMax()-
         model.getListPositionsForStatistica().get(2).getMean();
     } 
-    public static double getAverageWaitTime(PetriSim model){
+    public static double getAverageStoreWaitTime(PetriSim model){
         //get parametre of average wait time for Store position
         return model.getListPositionsForTimeStatistica().get(0).getMeanWaitTime();
     }
-    public static double getStdWaitTime(PetriSim model){
+    public static double getStdStoreWaitTime(PetriSim model){
         //get parametre of std wait time for Store position
         return model.getListPositionsForTimeStatistica().get(0).getSTDWaitTime();
     }
-    public static double getMinWaitTime(PetriSim model){
+    public static double getMinStoreWaitTime(PetriSim model){
         //get parametre of min wait time for Store position
         return model.getListPositionsForTimeStatistica().get(0).getMinWaitTime();
     }
-    public static double getMaxWaitTime(PetriSim model){
+    public static double getMaxStoreWaitTime(PetriSim model){
         //get parametre of max wait time for Store position
         return model.getListPositionsForTimeStatistica().get(0).getMaxWaitTime();
+    }
+    public static double getAverageSystemWaitTime(PetriSim model){
+        //get parametre of average wait time for System position
+        return model.getListPositionsForTimeStatistica().get(1).getMeanWaitTime();
+    }
+    public static double getStdSystemWaitTime(PetriSim model){
+        //get parametre of std wait time for System position
+        return model.getListPositionsForTimeStatistica().get(1).getSTDWaitTime();
+    }
+    public static double getMinSystemWaitTime(PetriSim model){
+        //get parametre of min wait time for System position
+        return model.getListPositionsForTimeStatistica().get(1).getMinWaitTime();
+    }
+    public static double getMaxSystemWaitTime(PetriSim model){
+        //get parametre of max wait time for System position
+        return model.getListPositionsForTimeStatistica().get(1).getMaxWaitTime();
     }
 }

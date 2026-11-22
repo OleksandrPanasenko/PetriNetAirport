@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 public class PetriSim implements Cloneable, Serializable {
 
 
-    private static int next = 1; //лічильник створених об"єктів
 
     private final PetriNet net;
     private final ArrayList<PetriP> listPositionsForStatistica = new ArrayList<>();
@@ -33,11 +32,6 @@ public class PetriSim implements Cloneable, Serializable {
 
     private StateTime timeState;
     private String name;
-    private int numObj; //поточний номер створюваного об"єкта
-    private int priority;
-    private ArcIn[] listIn;
-    private ArcOut[] listOut;
-    private String id; //unique number of object for server
 
     protected PetriT eventMin; // modifier is edited on protected for the subclass access
     protected double timeMin; // modifier is edited on protected for the subclass access
@@ -58,28 +52,18 @@ public class PetriSim implements Cloneable, Serializable {
    public PetriSim(PetriNet net) {
         this(net, new StateTime());
     }
-   
-   public PetriSim(String id, PetriNet net, StateTime timeState) {
-        this(net, new StateTime());
-        this.id = id; // server set id
-   }
     
     public PetriSim(PetriNet net, StateTime timeState) {
         this.net = net;
         this.timeState = timeState;
         name = net.getName();
-        numObj = next; 
-        next++;        
+      
         timeMin = Double.MAX_VALUE;
             
         listP = net.getListP();
         listT = net.getListT();
-        listIn = net.getArcIn();
-        listOut = net.getArcOut();
         eventMin = this.getEventMin();
-        priority = 0;
         
-        id = null; // server set id
     }
 
     
@@ -119,34 +103,7 @@ public class PetriSim implements Cloneable, Serializable {
         stdWaitTimesForPositions.add(new ArrayList<Double>());
     }
 
-    /**
-     * Get priority of Petri-object
-     *
-     * @return value of priority
-     */
-    public int getPriority() {
-        return priority;
-    }
 
-    /**
-     *
-     * @return the number of object
-     */
-    public int getNumObj() {
-        return numObj;
-    }
-
-
-    
-
-    /**
-     * Set priority of Petri-object
-     *
-     * @param a value of priority
-     */
-    public void setPriority(int a) {
-        priority = a;
-    }
 
     /**
      * This method uses for describing other actions associated with transition
@@ -352,16 +309,6 @@ public class PetriSim implements Cloneable, Serializable {
         statisticsInterval = interval;
         doIntervalStatistics = true;
     }
-    
-    public static Comparator<PetriSim> getComparatorByPriority() {
-        return (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority());
-    }
-    
-    public static Comparator<PetriSim> getComparatorByNum() {
-        return Comparator.comparingInt(PetriSim::getNumObj);
-    }
-
-    
 
     /**
      * Do one event
@@ -577,6 +524,9 @@ public class PetriSim implements Cloneable, Serializable {
     public ArrayList<Double> getTimes(){
         return listTimeForStatistica;
     }
+    public ArrayList<ArrayList<Double>> getAverageMarkersTimes() {
+        return averageMarkersTimesForPositions;
+    }
 
     /**
      * This method use for simulating Petri-object
@@ -731,20 +681,6 @@ public class PetriSim implements Cloneable, Serializable {
      */
     public void setName(String name) {
         this.name = name;
-    }
-    
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
     }
 
     /**

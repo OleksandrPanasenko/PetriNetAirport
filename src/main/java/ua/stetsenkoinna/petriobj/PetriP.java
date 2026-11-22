@@ -13,7 +13,6 @@ import java.util.Deque;
 public class PetriP extends PetriMainElement implements Cloneable, Serializable {
 
 
-    private final PetriElementId id;
     private String name;
     private int number;
     private int mark;
@@ -36,7 +35,6 @@ public class PetriP extends PetriMainElement implements Cloneable, Serializable 
      * @param m quantity of markers
      */
     public PetriP(String n, int m) {
-        id = PetriElementId.forPlace(n);
         name = n;
         number = next;
         next++;
@@ -61,26 +59,9 @@ public class PetriP extends PetriMainElement implements Cloneable, Serializable 
      * @param n name of place
      * @param m quantity of markers
      */
-    public PetriP(String id, String n, int m) {
-        this.id = PetriElementId.fromString(id);
-        name = n;
-        number = next;
-        next++;
-        mark = m;
-        mean = 0;
-        observedMax = m;
-        observedMin = m;
-    }
 
-    /**
-     *
-     * @param id unique number for saving in server
-     * @param n - the name of place
-     */
-    public PetriP(String id, String n) {
-        this(id, n, 0);
-        
-    }
+
+
 
     public PetriP(PetriP position) {
         this(position.getName(), position.getMark());
@@ -299,18 +280,5 @@ public class PetriP extends PetriMainElement implements Cloneable, Serializable 
                 + " number " + number + ", mark " + mark);
     }
 
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id != null ? id.getValue() : null;
-    }
-
-    /**
-     * @return the id wrapper
-     */
-    public PetriElementId getIdWrapper() {
-        return id;
-    }
 
 }

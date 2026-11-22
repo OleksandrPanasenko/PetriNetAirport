@@ -1,0 +1,18 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\main",
+    "\\src\\main\\java",
+    "\\src\\main\\java\\ua",
+    "\\src\\main\\java\\ua\\stetsenkoinna",
+    "\\src\\main\\java\\ua\\stetsenkoinna\\petriobj",
+    "\\target",
+    "\\target\\classes",
+    "\\target\\classes\\ua",
+    "\\target\\classes\\ua\\stetsenkoinna",
+    "\\target\\classes\\ua\\stetsenkoinna\\petriobj"
+  ],
+  "SelectedNode": "\\target\\classes\\ua\\stetsenkoinna\\petriobj\\ExceptionInvalidNetStructure.class",
+  "PreviewInSolutionExplorer": false
+}
