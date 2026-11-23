@@ -99,6 +99,7 @@ public class ValidateAirport {
     
     public SimConfig withTimeLoad(double val) { SimConfig c = copy(); c.timeLoad = val; return c; }
     public SimConfig withTimeLoad(int time, double val) { SimConfig c = copy(); c.timeModeling = time; c.timeLoad = val; return c; }
+    public SimConfig withTimeLoadAndExtraPlane(int time, double val) { SimConfig c = copy(); c.timeModeling = time; c.timeLoad = val; c.smallPlanes++; return c; }
 
     }
     public static String runValidation(String scenarioName, SimConfig cfg, int repeats) 

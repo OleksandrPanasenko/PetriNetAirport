@@ -1,9 +1,6 @@
 from scipy.optimize import brentq
 from scipy.stats import chi2, norm
 from scipy.stats import norm
-import time
-import math
-import random
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import root_scalar
