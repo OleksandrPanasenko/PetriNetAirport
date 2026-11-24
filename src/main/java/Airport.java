@@ -43,12 +43,12 @@ public class Airport {
         d_P.add(new PetriP("Big flights done",0));//5
         d_P.add(new PetriP("Store total",0));//6
         d_P.add(new PetriP("Cargo delivered",0));//7
-        
 
 		d_T.add(new PetriT("Arrival",timeCargoArrival));
 		d_T.get(0).setDistribution("exp", d_T.get(0).getTimeServ());
 		d_T.get(0).setParamDeviation(0.0);
-		d_In.add(new ArcIn(d_P.get(0),d_T.get(0),1));//Source->Arrival
+		d_T.get(0).setPriority(1);
+        d_In.add(new ArcIn(d_P.get(0),d_T.get(0),1));//Source->Arrival
 		d_Out.add(new ArcOut(d_T.get(0),d_P.get(0),1));//Arrival->Source
 		d_Out.add(new ArcOut(d_T.get(0),d_P.get(1),1));//Arrival->Store
         d_Out.add(new ArcOut(d_T.get(0),d_P.get(6),1));//Arrival->Store totals
@@ -60,6 +60,7 @@ public class Airport {
 		d_T.get(1).setParamDeviation(stdFlight);
         d_T.get(1).setParametrMin(minFlight+timeLoad*smallPlaneSize);
         d_T.get(1).setParametrMax(maxFlight+timeLoad*smallPlaneSize);
+        d_T.get(1).setPriority(2);
 		d_In.add(new ArcIn(d_P.get(1),d_T.get(1),smallPlaneSize));//Store->Small planes flight
         d_In.add(new ArcIn(d_P.get(2),d_T.get(1),1));//Small planes->Small planes flight
         
@@ -74,15 +75,13 @@ public class Airport {
 		d_T.get(2).setParamDeviation(stdFlight);
         d_T.get(2).setParametrMin(minFlight+timeLoad*bigPlaneSize);
         d_T.get(2).setParametrMax(maxFlight+timeLoad*bigPlaneSize);
-
+        d_T.get(2).setPriority(1);
 		d_In.add(new ArcIn(d_P.get(1),d_T.get(2),bigPlaneSize));//Store->Big planes flight
         d_In.add(new ArcIn(d_P.get(3),d_T.get(2),1));//Big planes->Big planes flight
         
 		d_Out.add(new ArcOut(d_T.get(2),d_P.get(3),1));//Big planes flight ->Big planes
         d_Out.add(new ArcOut(d_T.get(2),d_P.get(5),1));//Big planes flight->Big planes total
         d_Out.add(new ArcOut(d_T.get(2),d_P.get(7),bigPlaneSize));//Big planes flight->Cargo delivered
-
-
 
 		PetriNet d_Net = new PetriNet("Petri Airport",d_P,d_T,d_In,d_Out);
 		PetriP.initNext();
