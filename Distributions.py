@@ -230,16 +230,30 @@ def distribution_analysis(array,hist_bins=200):
     means = gmm.means_.flatten()
     stds = np.sqrt(gmm.covariances_.flatten())
 
-    print(f"Двовершинний розподіл (Суміш 2-х нормальних):")
-    print(f"  Компонента 1: w={weights[0]:.2f}, mean={means[0]:.4f}, std={stds[0]:.4f}")
-    print(f"  Компонента 2: w={weights[1]:.2f}, mean={means[1]:.4f}, std={stds[1]:.4f}")
-    distribution_bimodal = lambda x: (
-        weights[0] * stats.norm.cdf(x, loc=means[0], scale=stds[0]) +
-        weights[1] * stats.norm.cdf(x, loc=means[1], scale=stds[1])
+    loc = np.mean(sample_3)
+    scale = np.std(sample_3, ddof=1)
+
+    low = 0.0          # cut below at 0 (or set to your minimum bound)
+    high = sample_3.max()      # use np.inf for one-sided lower cut, or set an upper bound
+
+    a = (low - loc) / scale
+    b = (high - loc) / scale
+
+    print("Усічений нормальний розподіл:")
+    print(f"  loc={loc:.4f}, scale={scale:.4f}, low={low}, high={high}")
+
+    distribution_truncnorm = lambda x: stats.truncnorm.cdf(x, a, b, loc=loc, scale=scale)
+    sample_truncnorm = stats.truncnorm.rvs(a, b, loc=loc, scale=scale, size=len(sample_3))
+
+    draw_as_hists_compared(
+        samples_estimate=sample_truncnorm,
+        samples_true=sample_3,
+        N=hist_bins,
+        label="Усічений нормальний",
+        draw_norm=False,
+        ax=ax[2, 1]
     )
-    sample_bimodal = np.where(np.random.rand(len(sample_3)) < weights[0], stats.norm.rvs(loc=means[0], scale=stds[0], size=len(sample_3)), stats.norm.rvs(loc=means[1], scale=stds[1], size=len(sample_3)))
-    draw_as_hists_compared(samples_estimate=sample_bimodal, samples_true=sample_3, N=hist_bins, label="Двовершинний", draw_norm=False,ax=ax[2,1])
-    # Chi-squared test
-    print("Chi-squared test (Bimodal Gaussian):", chi_squared_check(sample_3, distribution_bimodal))
+
+    print("Chi-squared test (Truncated Normal):", chi_squared_check(sample_3, distribution_truncnorm))
     plt.tight_layout()
     plt.show()

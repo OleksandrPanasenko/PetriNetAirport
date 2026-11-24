@@ -9,20 +9,20 @@ import ua.stetsenkoinna.petriobj.ExceptionInvalidTimeDelay;
 
 public class ExperimentsAirport {
     public static void main(String[] args)throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure{
-        //Experiment_1_Load_Time_1();
-        //Experiment_2_Load_Time_0_1();
+        Experiment_1_Load_Time_1();
+        Experiment_2_Load_Time_0_1();
         Experiment_3_ExtraPlane_LoadTime();
     }
     
     public static void Experiment_1_Load_Time_1()throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure{
         int num_runs=80;
-        int sim_time=83500;
+        int sim_time=85300;
         double timeLoad=1.0;
         ValidateAirport.SimConfig base = new ValidateAirport.SimConfig().withTime(sim_time);
         ValidateAirport.SimConfig withTimeLoad = new ValidateAirport.SimConfig().withTimeLoad(sim_time, timeLoad);
 
         List<String> csvLines = new ArrayList<>();
-        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,AvgSystemWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
+        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
 
         for(int i=0;i<num_runs;i++){
             csvLines.add(ValidateAirport.runValidation("No_Load_Time_Run_"+i, base, 1));
@@ -51,7 +51,7 @@ public class ExperimentsAirport {
         ValidateAirport.SimConfig withTimeLoad = new ValidateAirport.SimConfig().withTimeLoad(sim_time, timeLoad);
 
         List<String> csvLines = new ArrayList<>();
-        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,AvgSystemWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
+        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
 
         for(int i=0;i<num_runs;i++){
             csvLines.add(ValidateAirport.runValidation("No_Load_Time_Run_"+i, base, 1));
@@ -80,7 +80,7 @@ public class ExperimentsAirport {
         ValidateAirport.SimConfig withExtraPlane = new ValidateAirport.SimConfig().withTimeLoadAndExtraPlane(sim_time, timeLoad);
 
         List<String> csvLines = new ArrayList<>();
-        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,AvgSystemWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
+        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
 
         for(int i=0;i<num_runs;i++){
             csvLines.add(ValidateAirport.runValidation("No_Load_Time_Run_"+i, base, 1));

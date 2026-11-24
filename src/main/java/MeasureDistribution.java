@@ -10,7 +10,7 @@ import ua.stetsenkoinna.petriobj.ExceptionInvalidTimeDelay;
 import ua.stetsenkoinna.petriobj.PetriSim;
 
 public class MeasureDistribution {
-    static double timeModeling = 83500.;
+    static double timeModeling = 85300.;
     static int NumberRepeats=80;
     public static void main(String[] args) throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure{
         PetriSim modelFirst=Airport.CreateAirportNet(3,
@@ -25,9 +25,7 @@ public class MeasureDistribution {
                                             60.0);
         modelFirst.go(timeModeling);
         Deque<Double> StoreWaitTimes = modelFirst.getListPositionsForTimeStatistica().get(0).getWaitTimes();
-        Deque<Double> SystemWaitTimes = modelFirst.getListPositionsForTimeStatistica().get(1).getWaitTimes();
         exportEventsCsv("single_store_wait_time.csv", new ArrayList<Deque<Double>>(List.of(StoreWaitTimes)));
-        exportEventsCsv("single_system_wait_time.csv", new ArrayList<Deque<Double>>(List.of(SystemWaitTimes)));
         
         ArrayList<PetriSim> simulations=new ArrayList<>();
         for(int i=0;i<NumberRepeats;i++){
@@ -46,17 +44,14 @@ public class MeasureDistribution {
             simulations.add(model);
         }
     ArrayList<Deque<Double>> allStoreWaitTimes = new ArrayList<>();
-    ArrayList<Deque<Double>> allSystemWaitTimes = new ArrayList<>();
     
 
     for (PetriSim model : simulations) {
         allStoreWaitTimes.add(model.getListPositionsForTimeStatistica().get(0).getWaitTimes());
-        allSystemWaitTimes.add(model.getListPositionsForTimeStatistica().get(1).getWaitTimes());
     }
 
     // Export to csv files
     exportEventsCsv("80_store_wait_time.csv", allStoreWaitTimes);
-    exportEventsCsv("80_system_wait_time.csv", allSystemWaitTimes);
     }
     public static void exportEventsCsv(String filename, ArrayList<Deque<Double>> dataPerRun) {
         if (dataPerRun == null || dataPerRun.size() == 0) {

@@ -13,7 +13,7 @@ public class ValidateAirport {
         SimConfig base = new SimConfig();
 
         List<String> csvLines = new ArrayList<>();
-        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,AvgSystemWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
+        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
 
         csvLines.add(runValidation("0_Baseline", base, 5));
         csvLines.add(runValidation("1_1_LessTime", base.withTime(500), 5));
@@ -105,7 +105,7 @@ public class ValidateAirport {
     public static String runValidation(String scenarioName, SimConfig cfg, int repeats) 
         throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure {
     
-    double sumStoreWait = 0, sumSystemWait = 0, sumSmallUtil = 0, sumBigUtil = 0, sumBacklog = 0, sumDeliveredCargo = 0;
+    double sumStoreWait = 0, sumSmallUtil = 0, sumBigUtil = 0, sumBacklog = 0, sumDeliveredCargo = 0;
 
     for (int i = 0; i < repeats; i++) {
         PetriSim model = Airport.CreateAirportNet(
@@ -118,16 +118,15 @@ public class ValidateAirport {
 
         // Accumulate final run metrics
         sumStoreWait += Airport.getAverageStoreWaitTime(model);
-        sumSystemWait += Airport.getAverageSystemWaitTime(model);
         sumSmallUtil += Airport.getSmallPlanesLoad(model);
         sumBigUtil += Airport.getBigPlanesLoad(model);
         sumBacklog += Airport.getAvgStore(model);
         sumDeliveredCargo += Airport.getDeliveredCargo(model);
     }
 
-    return String.format(java.util.Locale.US, "%s,%.2f,%d,%d,%.2f,%.2f,%.2f,%.2f,%.3f,%.3f,%.1f,%.1f",
+    return String.format(java.util.Locale.US, "%s,%.2f,%d,%d,%.2f,%.2f,%.2f,%.3f,%.3f,%.1f,%.1f",
         scenarioName, cfg.timeModeling, cfg.smallPlanes, cfg.bigPlanes, cfg.timeCargoArrival, cfg.timeLoad,
-        sumStoreWait / repeats, sumSystemWait / repeats, sumSmallUtil / repeats, sumBigUtil / repeats, sumBacklog / repeats, sumDeliveredCargo / repeats
+        sumStoreWait / repeats, sumSmallUtil / repeats, sumBigUtil / repeats, sumBacklog / repeats, sumDeliveredCargo / repeats
     );
 }
 }

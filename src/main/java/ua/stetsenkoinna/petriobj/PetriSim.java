@@ -38,11 +38,6 @@ public class PetriSim implements Cloneable, Serializable {
     protected double statisticsInterval = 0.0; // modifier is edited on protected for the subclass access
     protected double timeLastStatistics = 0.0; // modifier is edited on protected for the subclass access
     protected boolean doIntervalStatistics = false; // modifier is edited on protected for the subclass access
-    /**
-     * Transient because a deserialized Petri-object belongs to no model yet, and it is the
-     * model — not the object — that decides who observes a firing.
-     */
-    private transient TransitionFiringListener firingListener;
 
     /**
      * Constructs the Petri simulator with given Petri net and time modeling
@@ -169,15 +164,7 @@ public class PetriSim implements Cloneable, Serializable {
      *
      * @param listener the observer of the four firing phases
      */
-    public void setFiringListener(TransitionFiringListener listener) {
-        this.firingListener = listener;
-    }
 
-    private void notifyPhase(FiringPhase phase, PetriT tr) {
-        if (firingListener != null) {
-            firingListener.onFiringPhase(phase, tr, this.getCurrentTime());
-        }
-    }
 
     /**
      * Runs the tokens-in half of a firing: reports it, lets a subclass animate around it, and
@@ -190,10 +177,7 @@ public class PetriSim implements Cloneable, Serializable {
      * @return {@code false} when the caller must return from {@code input()} straight away
      */
     private boolean fireActIn(PetriT tr) {
-        notifyPhase(FiringPhase.BEFORE_ACT_IN, tr);
-        beforeActIn(tr);
         tr.actIn(listP, this.getCurrentTime());
-        notifyPhase(FiringPhase.AFTER_ACT_IN, tr);
         afterActIn(tr);
         return !shouldInterrupt();
     }
@@ -210,14 +194,9 @@ public class PetriSim implements Cloneable, Serializable {
      */
     private boolean fireActOut(PetriT tr) {
         boolean real = tr != null && tr.getBuffer() > 0;
-        if (real) {
-            notifyPhase(FiringPhase.BEFORE_ACT_OUT, tr);
-        }
-        beforeActOut(tr);
+
         tr.actOut(listP, this.getCurrentTime());
-        if (real) {
-            notifyPhase(FiringPhase.AFTER_ACT_OUT, tr);
-        }
+
         afterActOut(tr);
         return !shouldInterrupt();
     }
@@ -404,7 +383,7 @@ public class PetriSim implements Cloneable, Serializable {
             timeMin = Double.MAX_VALUE;
         } else {
             while (!activeT.isEmpty()) {
-                PetriT tr = this.doConflikt(activeT);
+                PetriT tr = activeT.getFirst();
                 if (!fireActIn(tr)) return;
                 activeT = this.findActiveT();
             }

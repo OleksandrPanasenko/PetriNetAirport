@@ -10,11 +10,11 @@ import ua.stetsenkoinna.petriobj.ExceptionInvalidTimeDelay;
 public class MeasureParametres {
     public static void main(String[] args)throws ExceptionInvalidTimeDelay, ExceptionInvalidNetStructure{
         int num_runs=80;
-        int sim_time=83500;
+        int sim_time=85300;
         ValidateAirport.SimConfig base = new ValidateAirport.SimConfig().withTime(sim_time);
 
         List<String> csvLines = new ArrayList<>();
-        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,AvgSystemWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
+        csvLines.add("Scenario,Time,SmallPlanes,BigPlanes,ArrivalDelay,LoadTime,AvgStoreWait,SmallUtil,BigUtil,AvgStore,DeliveredCargo");
 
         for(int i=0;i<num_runs;i++){
             csvLines.add(ValidateAirport.runValidation("Run_"+i, base, 1));

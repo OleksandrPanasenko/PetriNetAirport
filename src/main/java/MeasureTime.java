@@ -33,24 +33,17 @@ public class MeasureTime {
     List<List<Double>> allMeanSmallPlanesLoad = new ArrayList<>();
     List<List<Double>> allMeanBigPlanesLoad = new ArrayList<>();
     List<List<Double>> allMeanStoreWaitTimes = new ArrayList<>();
-    List<List<Double>> allMeanSystemWaitTimes = new ArrayList<>();
     List<List<Double>> allStdStoreWaitTimes = new ArrayList<>();
-    List<List<Double>> allStdSystemWaitTimes = new ArrayList<>();
-
     for (PetriSim model : simulations) {
         allMeanSmallPlanesLoad.add(model.getAverageMarkersTimes().get(1));
         allMeanBigPlanesLoad.add(model.getAverageMarkersTimes().get(2));
         allMeanStoreWaitTimes.add(model.getAverageWaitTimes().get(0));
-        allMeanSystemWaitTimes.add(model.getAverageWaitTimes().get(1));
         allStdStoreWaitTimes.add(model.getStdWaitTimes().get(0));
-        allStdSystemWaitTimes.add(model.getStdWaitTimes().get(1));
     }
 
     // Export to csv files
     exportTimeSeriesCsv("wait_times_mean.csv", simulations.get(0).getTimes(), allMeanStoreWaitTimes);
-    exportTimeSeriesCsv("wait_times_mean_system.csv", simulations.get(0).getTimes(), allMeanSystemWaitTimes);
     exportTimeSeriesCsv("wait_times_std.csv", simulations.get(0).getTimes(), allStdStoreWaitTimes);
-    exportTimeSeriesCsv("wait_times_std_system.csv", simulations.get(0).getTimes(), allStdSystemWaitTimes);
     exportTimeSeriesCsv("small_planes_load.csv", simulations.get(0).getTimes(), allMeanSmallPlanesLoad);
     exportTimeSeriesCsv("big_planes_load.csv", simulations.get(0).getTimes(), allMeanBigPlanesLoad);
     System.out.println("Export completed successfully: wait_times_mean.csv & wait_times_std.csv");
